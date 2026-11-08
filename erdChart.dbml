@@ -1,0 +1,109 @@
+Table People {
+  personalID int [pk, increment]
+  firstName varchar(30) [not null]
+  lastName varchar(30) [not null]
+  email varchar(50) [not null, unique]
+  phoneNumber varchar(15) [not null]
+}
+
+Table Offices {
+  officeCode varchar(15) [pk]
+  city varchar(50) [not null]
+  address varchar(50) [not null]
+  country varchar(50) [not null]
+}
+
+Table Employees {
+  employeeNumber int [pk, increment]
+  personalID int [not null]        // FK -> People.personalID (ISA)
+  jobTitle varchar(50) [not null]
+  officeCode varchar(15) [not null] // FK -> Offices.officeCode
+  reportTo int                      // self-FK -> Employees.employeeNumber
+}
+
+Table Engineers {
+  engineerID int [pk, increment]
+  personalID int [not null]        // FK -> People.personalID (ISA)
+  expertise varchar(50) [not null]
+}
+
+Table Customers {
+  customerNumber int [pk, increment]
+  personalID int [not null]            // FK -> People.personalID (ISA)
+  salesRepEmployeeNumber int [not null]// FK -> Employees.employeeNumber
+  creditLimit decimal(10,2)
+}
+
+Table Sales_Rep {
+  salesRepId int [pk, increment]
+  employeeNumber int [not null, unique] // 1:1 with Employees
+  region varchar(50)
+  hireDate date
+  totalSales decimal(10,2)
+}
+
+Table Product_Lines {
+  productLine varchar(50) [pk]
+  description text
+}
+
+Table Products {
+  productCode varchar(30) [pk]
+  productName varchar(50) [not null]
+  productLine varchar(50) [not null]  // FK -> Product_Lines.productLine
+  quantityInStock int [not null]
+  price decimal(10,2) [not null]
+}
+
+Table Orders {
+  orderNumber int [pk, increment]
+  orderDate date [not null]
+  requiredDate date [not null]
+  shippedDate date
+  status varchar(50) [not null]
+  customerNumber int [not null]        // FK -> Customers.customerNumber
+}
+
+Table Order_Details {
+  orderNumber int [not null]           // FK -> Orders.orderNumber
+  productCode varchar(30) [not null]   // FK -> Products.productCode
+  quantityOrdered int [not null]
+  priceEach decimal(10,2) [not null]
+
+  Indexes {
+    (orderNumber, productCode) [pk]
+  }
+}
+
+Table Payments {
+  customerNumber int [not null]        // FK -> Customers.customerNumber
+  checkNumber varchar(50) [not null]
+  paymentDate date [not null]
+  amount decimal(10,2) [not null]
+
+  Indexes {
+    (customerNumber, checkNumber) [pk]
+  }
+}
+
+Ref: Employees.personalID > People.personalID
+Ref: Engineers.personalID > People.personalID
+Ref: Customers.personalID > People.personalID
+
+Ref: Employees.officeCode > Offices.officeCode
+Ref: Employees.reportTo > Employees.employeeNumber
+
+Ref: Sales_Rep.employeeNumber > Employees.employeeNumber
+Ref: Customers.salesRepEmployeeNumber > Employees.employeeNumber
+
+Ref: Orders.customerNumber > Customers.customerNumber
+Ref: Order_Details.orderNumber > Orders.orderNumber
+Ref: Order_Details.productCode > Products.productCode
+
+Ref: Products.productLine > Product_Lines.productLine
+Ref: Payments.customerNumber > Customers.customerNumber
+
+
+Ref: "Orders"."orderDate" < "Orders"."orderNumber"
+
+Ref: "Payments"."checkNumber" < "Payments"."amount"

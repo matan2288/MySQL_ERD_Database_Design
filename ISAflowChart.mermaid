@@ -1,0 +1,31 @@
+---
+config:
+  layout: fixed
+---
+flowchart TB
+    personalID(["personalID"]) --- people["people"]
+    firstName(["firstName"]) --- people
+    lastName(["lastName"]) --- people
+    email(["email"]) --- people
+    phoneNumber(["phoneNumber"]) --- people
+    people --- ISA["ISA"]
+    employeeNumber(["employeeNumber"]) --- employee["employee"]
+    reportTo(["reportTo"]) --- employee
+    jobTitle(["jobTitle"]) --- employee
+    officeCode(["officeCode"]) --- employee
+    engineerID(["engineerID"]) --- engineer["engineers"]
+    expertise(["expertise"]) --- engineer
+    customerNumber(["customerNumber"]) --- customer["customers"]
+    salesRepEmployeeNumber(["salesRepEmployeeNumber"]) --- customer
+    creditLimit(["creditLimit"]) --- customer
+    ISA --- employee & engineer & customer
+    people@{ shape: rect}
+    ISA@{ shape: tri}
+    employee@{ shape: rect}
+    engineer@{ shape: rect}
+    customer@{ shape: rect}
+    style people fill:#4c6ef5,stroke:#1c3faa,stroke-width:2px,color:#fff
+    style ISA fill:#ffd43b,stroke:#f08c00,stroke-width:2px,color:#000
+    style employee fill:#82c91e,stroke:#5c940d,stroke-width:2px,color:#fff
+    style engineer fill:#fd7e14,stroke:#d9480f,stroke-width:2px,color:#fff
+    style customer fill:#15aabf,stroke:#0b7285,stroke-width:2px,color:#fff

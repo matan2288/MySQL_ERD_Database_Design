@@ -1,0 +1,98 @@
+erDiagram
+  people {
+    INT     personalID   "PK"
+    VARCHAR firstName
+    VARCHAR lastName
+    VARCHAR email        "UQ"
+    VARCHAR phoneNumber
+  }
+
+  employees {
+    INT     employeeNumber "PK"
+    INT     personalID     "FK (unique) -> people.personalID"
+    VARCHAR jobTitle
+    VARCHAR officeCode     "FK -> offices.officeCode"
+    INT     reportTo       "Self-FK -> employees.employeeNumber (NULL for CEO)"
+  }
+
+  engineers {
+    INT     engineerID   "PK"
+    INT     personalID   "FK (unique) -> people.personalID"
+    VARCHAR expertise
+  }
+
+  customers {
+    INT     customerNumber        "PK"
+    INT     personalID            "FK (unique) -> people.personalID"
+    INT     salesRepEmployeeNumber "FK -> employees.employeeNumber"
+    DECIMAL creditLimit
+  }
+
+  sales_rep {
+    INT     salesRepId     "PK"
+    INT     employeeNumber "FK (unique) -> employees.employeeNumber"
+    VARCHAR region
+    DATE    hireDate
+    DECIMAL totalSales
+  }
+
+  offices {
+    VARCHAR officeCode "PK"
+    VARCHAR city
+    VARCHAR address
+    VARCHAR country
+  }
+
+  product_lines {
+    VARCHAR productLine "PK"
+    TEXT    description
+  }
+
+  products {
+    VARCHAR productCode     "PK"
+    VARCHAR productName
+    VARCHAR productLine     "FK -> product_lines.productLine"
+    INT     quantityInStock
+    DECIMAL price
+  }
+
+  orders {
+    INT     orderNumber    "PK"
+    INT     customerNumber "FK -> customers.customerNumber"
+    DATE    orderDate
+    DATE    requiredDate
+    DATE    shippedDate
+    VARCHAR status
+  }
+
+  order_details {
+    INT     orderNumber  "PK, FK -> orders.orderNumber"
+    VARCHAR productCode  "PK, FK -> products.productCode"
+    INT     quantityOrdered
+    DECIMAL priceEach
+  }
+
+  payments {
+    INT     customerNumber "PK, FK -> customers.customerNumber"
+    VARCHAR checkNumber    "PK"
+    DATE    paymentDate
+    DECIMAL amount
+  }
+
+  %% ===== relationships =====
+  people     ||--|| employees : "ISA (Total, Disjoint)"
+  people     ||--|| engineers : "ISA (Total, Disjoint)"
+  people     ||--|| customers : "ISA (Total, Disjoint)"
+
+  offices    ||--o{ employees : "1:N (office → employees)"
+  employees  ||--o{ employees : "recursive 1:N (reportTo)"
+  employees  |o--|| sales_rep : "1:1 (subset)"
+
+  product_lines ||--o{ products : "1:N (productLine → products)"
+
+  sales_rep  ||--o{ customers : "1:N (sales_rep → customers)"
+  customers  ||--o{ orders    : "1:N (customer → orders)"
+  customers  ||--o{ payments  : "1:N (customer → payments)"
+
+  orders     ||--o{ order_details : "1:N (order → order_details)"
+  products   ||--o{ order_details : "1:N (product → order_details)"
